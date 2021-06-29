@@ -69,14 +69,14 @@ def load_data_4(DATA_DIR, GT_DIR, size=(300, 300), debug=False, limit=-1, remove
         print("GT Loaded : ", len(gt_list), " Files")
     counter = 0
     for a in file_names:
-        img = cv2.imread(DATA_DIR + "/" + a)
+        img = cv2.imread(DATA_DIR + "\\original_highres_double\\" + a)
         img = cv2.resize(img, size)
         image_list.append(img)
         counter += 1
     print(len(image_list))
 
     print(gt_list[0])
-    gt_list = np.reshape(gt_list, (-1, 8))
+    gt_list = np.reshape(gt_list, (-1, 16))
     print(gt_list[0])
 
     image_list = np.array(image_list)

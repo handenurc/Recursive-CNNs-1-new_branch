@@ -21,7 +21,7 @@ def argsProcessor():
 args = argsProcessor()
 inputDataDir = args.inputDir
 
-GT_DIR = inputDataDir + "/gt.csv"
+GT_DIR = inputDataDir + "\\gt.csv"
 
 VALIDATION_PERCENTAGE = .2
 TEST_PERCENTAGE = .01
@@ -51,8 +51,8 @@ for a in range(0, 10):
         cv2.circle(temp_image, (int(gt_list[a][b * 2] * 64), int(gt_list[a][b * 2 + 1] * 64)), 2, (255, 0, 0), 4)
     cv2.imwrite("../temp" + str(a) + ".jpg", temp_image)
 
-BATCH_SIZE = 10
-NO_OF_STEPS = 1000000000
+BATCH_SIZE = 4
+NO_OF_STEPS = 100
 CHECKPOINT_DIR = "../4PointAllBg"
 if (not os.path.isdir(CHECKPOINT_DIR)):
     os.mkdir(CHECKPOINT_DIR)
@@ -163,7 +163,7 @@ with tf.name_scope("loss"):
     mySum = tf.compat.v1.summary.scalar('Train_loss', cross_entropy)
     validate_loss = tf.compat.v1.summary.scalar('Validate_loss', cross_entropy)
 with tf.name_scope("Train"):
-    train_step = tf.compat.v1.train.AdagradOptimizer(1e-3).minimize(cross_entropy)
+    train_step = tf.compat.v1.train.AdagradOptimizer(1e-8).minimize(cross_entropy)
 
 merged = tf.compat.v1.summary.merge_all()
 
@@ -186,7 +186,7 @@ for i in range(NO_OF_STEPS):
     batch = train_image[rand_list]
     gt = train_gt[rand_list]
 
-    if i % 1000 == 0:
+    if i % 10 == 0:
         loss_mine = cross_entropy.eval(feed_dict={
             x: train_image[0:BATCH_SIZE], y_: train_gt[0:BATCH_SIZE], keep_prob: 1.0})
         print("Loss on Train : ", math.sqrt((loss_mine / BATCH_SIZE) * 2))
@@ -242,7 +242,7 @@ for i in range(NO_OF_STEPS):
         img = batch[0]
         img = cv2.resize(img, (320, 320))
         cv2.imwrite("../temp" + str(temp_temp) + ".jpg", img)
-    if i % 500000 == 0 and i != 0:
+    if i % 5 == 0 and i != 0:
         saver.save(sess, CHECKPOINT_DIR + '/model.ckpt', global_step=i + 1)
     else:
         a, summary = sess.run([train_step, mySum], feed_dict={x: batch, y_: gt, keep_prob: 0.7})
